@@ -1,0 +1,36 @@
+{
+  "name": "react-d3-pie",
+  "version": "1.0.0",
+  "description": "react component to create a d3 pie chart",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zuoq/react-d3-pie.git"
+  },
+  "keywords": [
+    "react",
+    "d3",
+    "pie"
+  ],
+  "author": "izqcool",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zuoq/react-d3-pie/issues"
+  },
+  "homepage": "https://github.com/zuoq/react-d3-pie#readme",
+  "dependencies": {
+    "d3": "^5.5.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "webpack": "^4.16.5"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1"
+  }
+}
