@@ -3,13 +3,15 @@ const webpack = require('webpack');
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
+const parentPath = path.resolve(__dirname, '..');
+
 
 module.exports = {
-  entry: `${__dirname}/src/index.js`,
-  output: {
-    path: `${__dirname}/dist`,
-    filename: "build.js"
-  },
+  // entry: path.resolve(`${parentPath}/src/index.js`),
+  // output: {
+  //   path: path.resolve(`${parentPath}/dist`),
+  //   filename: "build.js"
+  // },
 
   mode: 'production',
 
@@ -36,9 +38,11 @@ module.exports = {
   //   modules: [path.resolve('./src')],
   //   extensions: ['.json', '.js', '.css'],
   // },
-  plugins: [
-    new UglifyJsPlugin()
-  ],
+  // optimization: {
+  //   minimizer: [
+  //     new UglifyJsPlugin()
+  //   ]
+  // }
 };
 
 
