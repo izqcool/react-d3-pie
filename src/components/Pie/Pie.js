@@ -58,36 +58,55 @@ export class Pie extends React.Component {
   renderPie(data) {
     console.log(styles.container);
     // clear canvas
-    const {width,height,colors} = this.props;
+    const {width, height, colors} = this.props;
     const radius = Math.min(width, height) / 2;
 
-    const pie = d3.pie().value(d => d.value);
+    const pieData = d3.pie().value(d => d.value)(data);
     console.log(d3.select(`.${styles.container}`));
 
     d3.select(`.${styles.container}`).selectAll('svg').remove();
     console.log(d3.select(`.${styles.container}`));
-    const svg  = d3.select(`.${styles.container}`)
-      .append('svg')
-      .attr('width',width)
-      .attr('height',height);
+    const svg = d3.select(`.${styles.container}`)
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
     console.log(svg);
 
     const g = svg.append('g')
-      .attr('transform',`translate(${width/2},${height/2})`);
+    .attr('transform', `translate(${width / 2},${height / 2})`);
 
     const arc = d3.arc()
-      .innerRadius(radius*0.4)
-      .outerRadius(radius*0.8);
-
-    const path = g.datum(data).selectAll("path")
-    .data(pie)
-    .enter().append("path")
-    .attr("fill", function(d, i) { return colors[i]; })
-    .attr("d", arc);
+    .innerRadius(radius * 0.4)
+    .outerRadius(radius * 0.8);
 
 
+    const pieBlock = g.selectAll('g')
+      .data(pieData)
+      .enter()
+      .append('g')
+      .attr('id', (d, i) => `pie_${i}`)
+      .attr('class', styles.pieBlock)
+      .on('mouseenter',(d, i) => pieBlock.select(`#pie_${i}`).classed(styles.hover, true));
 
+
+    pieBlock.append('path')
+      .attr('fill', function (d,i) {
+        console.log(d);
+        return colors[i];
+      })
+      .attr('d', d => arc({
+        startAngle: d.startAngle,
+        endAngle: d.endAngle
+      }));
+
+    pieBlock.append('text')
+      .attr('transform', d => `translate(${arc.centroid(d)})`)
+      .text(d => d.data.name);
   }
+
+
+
+
 
 
   render() {
