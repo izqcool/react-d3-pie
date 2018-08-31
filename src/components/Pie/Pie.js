@@ -61,7 +61,15 @@ export class Pie extends React.Component {
     const {width, height, colors} = this.props;
     const radius = Math.min(width, height) / 2;
 
-    const pieData = d3.pie().value(d => d.value)(data);
+    let pieData = d3.pie().value(d => d.value)(data);
+    const formatPercent = d3.format('.1%');
+    const sum = d3.sum(pieData, d => d.value);
+    pieData = pieData.map(d => ({
+      ...d,
+      extra: {
+        percent: formatPercent(d.value/sum)
+      }
+    }));
     console.log(d3.select(`.${styles.container}`));
 
     d3.select(`.${styles.container}`).selectAll('svg').remove();
@@ -101,7 +109,7 @@ export class Pie extends React.Component {
 
     pieBlock.append('text')
       .attr('transform', d => `translate(${arc.centroid(d)})`)
-      .text(d => d.data.name);
+      .text(d => d.extra.percent);
   }
 
 

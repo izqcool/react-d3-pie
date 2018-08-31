@@ -7,11 +7,23 @@
     width: 100%;
     height: 100%;
   }
+
+  .pieBlock {
+    text {
+      fill: #000;
+      text-anchor: middle;
+      pointer-events: none;
+      font-size: 1em;
+    }
+  }
+
   .pieBlock:hover {
     opacity: 1;
     transform: scale(1.1);
     transition: all .3s linear;
-
+    text {
+      font-size: 1.2em;
+    }
   }
 
 }
