@@ -56,12 +56,18 @@ export class Pie extends React.Component {
 
 
   renderPie(data) {
+
+    function midAngle(d){
+      return d.startAngle + (d.endAngle - d.startAngle)/2;
+    }
+
     console.log(styles.container);
     // clear canvas
     const {width, height, colors} = this.props;
     const radius = Math.min(width, height) / 2;
 
     let pieData = d3.pie().value(d => d.value)(data);
+    let pieLabel = d3.pie().value(d => d.name)(data);
     const formatPercent = d3.format('.1%');
     const sum = d3.sum(pieData, d => d.value);
     pieData = pieData.map(d => ({
@@ -83,12 +89,23 @@ export class Pie extends React.Component {
     const g = svg.append('g')
     .attr('transform', `translate(${width / 2},${height / 2})`);
 
+    g.append("g")
+    .attr("class", "slices");
+
+    g.append("g")
+      .attr("class", "lines");
+
     const arc = d3.arc()
-    .innerRadius(radius * 0.4)
-    .outerRadius(radius * 0.8);
+      .innerRadius(radius * 0.4)
+      .outerRadius(radius * 0.8);
 
 
-    const pieBlock = g.selectAll('g')
+    const outerArc = d3.arc()
+      .innerRadius(radius * 0.4)
+      .outerRadius(radius * 0.8);
+
+
+    const pieBlock = g.select('.slices').selectAll('g')
       .data(pieData)
       .enter()
       .append('g')
@@ -110,6 +127,41 @@ export class Pie extends React.Component {
     pieBlock.append('text')
       .attr('transform', d => `translate(${arc.centroid(d)})`)
       .text(d => d.extra.percent);
+
+    const polyline = d3.select(".lines").selectAll("polyline")
+      .data(pieLabel)
+      .enter()
+      .append('polyline')
+      .style("stroke", "black");
+
+    console.log(polyline);
+
+
+    polyline.transition().duration(1000)
+    .attrTween("points", function(d){
+      console.log(this);
+      console.log(this._current);
+      console.log(d);
+      this._current = this._current || d;
+      const interpolate = d3.interpolate(this._current, d);
+      this._current = interpolate(0);
+      console.log(this._current);
+      return function(t) {
+        const d2 = interpolate(t);
+        console.log(d2);
+        const pos = outerArc.centroid(d2);
+        pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+        console.log(pos[0]);
+        return [arc.centroid(d2), outerArc.centroid(d2)];
+      };
+    });
+
+    polyline.exit()
+      .remove();
+
+
+
+
   }
 
 
