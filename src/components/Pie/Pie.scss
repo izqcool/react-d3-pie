@@ -8,7 +8,14 @@
     height: 100%;
   }
 
+  .content {
+    width: 100%;
+    height: 100%;
+  }
+
   .slices{
+    //position: relative;
+    //z-index: 100;
     .pieBlock {
       text {
         fill: #fff;
@@ -29,8 +36,10 @@
   }
 
   .lines {
+    //position: relative;
+    //z-index: 0;
     .polyline:hover, .hover {
-      transform: scale(1.2);
+      //transform: scale(1.2);
       transition: all .3s linear;
 
     }
