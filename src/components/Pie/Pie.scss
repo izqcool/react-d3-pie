@@ -8,23 +8,35 @@
     height: 100%;
   }
 
-  .pieBlock {
-    text {
-      fill: #fff;
-      text-anchor: middle;
-      pointer-events: none;
-      font-size: 1em;
+  .slices{
+    .pieBlock {
+      text {
+        fill: #fff;
+        text-anchor: middle;
+        pointer-events: none;
+        font-size: 1em;
+      }
+    }
+
+    .pieBlock:hover {
+      opacity: 1;
+      transform: scale(1.1);
+      transition: all .3s linear;
+      text {
+        font-size: 1.2em;
+      }
     }
   }
 
-  .pieBlock:hover {
-    opacity: 1;
-    transform: scale(1.1);
-    transition: all .3s linear;
-    text {
-      font-size: 1.2em;
+  .lines {
+    .polyline:hover, .hover {
+      transform: scale(1.2);
+      transition: all .3s linear;
+
     }
   }
+
+
 
 }
 

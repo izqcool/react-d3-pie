@@ -30,9 +30,6 @@ export class Pie extends React.Component {
       {value: 70, name: 'test3'},
       {value: 40, name: 'test4'},
     ];
-    // console.log(d3.pie().value(d => d.value)(testData));
-
-    console.log(d3.schemeCategory10);
 
     this.renderPie(testData);
 
@@ -61,13 +58,13 @@ export class Pie extends React.Component {
       return d.startAngle + (d.endAngle - d.startAngle)/2;
     }
 
-    console.log(styles.container);
     // clear canvas
     const {width, height, colors} = this.props;
     const radius = Math.min(width, height) / 2;
 
     let pieData = d3.pie().value(d => d.value)(data);
     let pieLabel = d3.pie().value(d => d.name)(data);
+
     const formatPercent = d3.format('.1%');
     const sum = d3.sum(pieData, d => d.value);
     pieData = pieData.map(d => ({
@@ -76,24 +73,21 @@ export class Pie extends React.Component {
         percent: formatPercent(d.value/sum)
       }
     }));
-    console.log(d3.select(`.${styles.container}`));
 
     d3.select(`.${styles.container}`).selectAll('svg').remove();
-    console.log(d3.select(`.${styles.container}`));
     const svg = d3.select(`.${styles.container}`)
     .append('svg')
     .attr('width', width)
     .attr('height', height);
-    console.log(svg);
 
     const g = svg.append('g')
     .attr('transform', `translate(${width / 2},${height / 2})`);
 
     g.append("g")
-    .attr("class", "slices");
+    .attr("class", styles.slices);
 
     g.append("g")
-      .attr("class", "lines");
+      .attr("class", styles.lines);
 
     const arc = d3.arc()
       .innerRadius(radius * 0.4)
@@ -101,22 +95,26 @@ export class Pie extends React.Component {
 
 
     const outerArc = d3.arc()
-      .innerRadius(radius * 0.4)
-      .outerRadius(radius * 0.8);
+      .innerRadius(radius * 0.9)
+      .outerRadius(radius * 0.9);
 
 
-    const pieBlock = g.select('.slices').selectAll('g')
+    const pieBlock = g.select(`.${styles.slices}`).selectAll('g')
       .data(pieData)
       .enter()
       .append('g')
       .attr('id', (d, i) => `pie_${i}`)
       .attr('class', styles.pieBlock)
-      .on('mouseenter',(d, i) => pieBlock.select(`#pie_${i}`).classed(styles.hover, true));
+      .on('mouseenter',(d, i) => {
+        d3.select(`#polyline_${i}`).classed(styles.hover,true);
+      })
+      .on('mouseleave',(d, i) => {
+        d3.select(`#polyline_${i}`).classed(styles.hover,false);
+      });
 
 
     pieBlock.append('path')
       .attr('fill', function (d,i) {
-        console.log(d);
         return colors[i];
       })
       .attr('d', d => arc({
@@ -128,38 +126,32 @@ export class Pie extends React.Component {
       .attr('transform', d => `translate(${arc.centroid(d)})`)
       .text(d => d.extra.percent);
 
-    const polyline = d3.select(".lines").selectAll("polyline")
-      .data(pieLabel)
+    const polyline = d3.select(`.${styles.lines}`).selectAll('polyline')
+      .data(pieData)
       .enter()
       .append('polyline')
-      .style("stroke", "black");
+      .style('fill','none')
+      .attr('class',styles.polyline)
+      .attr('id', (d, i) => `polyline_${i}`)
+      .style('stroke',(d,i) => colors[i]);
 
-    console.log(polyline);
 
 
     polyline.transition().duration(1000)
     .attrTween("points", function(d){
-      console.log(this);
-      console.log(this._current);
-      console.log(d);
       this._current = this._current || d;
       const interpolate = d3.interpolate(this._current, d);
       this._current = interpolate(0);
-      console.log(this._current);
       return function(t) {
         const d2 = interpolate(t);
-        console.log(d2);
         const pos = outerArc.centroid(d2);
         pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-        console.log(pos[0]);
-        return [arc.centroid(d2), outerArc.centroid(d2)];
+        return [arc.centroid(d2), outerArc.centroid(d2),pos];
       };
     });
 
     polyline.exit()
       .remove();
-
-
 
 
   }
