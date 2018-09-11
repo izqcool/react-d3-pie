@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import * as styles from './Pie.scss';
+import tip from 'd3-tip';
+
+// d3.tip = tip;
 
 export class Pie extends React.Component {
 
@@ -54,10 +57,7 @@ export class Pie extends React.Component {
     // clear canvas
     const {width, height, colors} = this.props;
     const radius = Math.min(width, height) / 2;
-
     let pieData = d3.pie().value(d => d.value)(data);
-    let pieLabel = d3.pie().value(d => d.name)(data);
-
     const formatPercent = d3.format('.1%');
     const sum = d3.sum(pieData, d => d.value);
     pieData = pieData.map(d => ({
@@ -69,52 +69,80 @@ export class Pie extends React.Component {
 
     d3.select(`.${styles.container}`).selectAll('svg').remove();
     const svg = d3.select(`.${styles.container}`)
-    .append('svg')
-    .attr('width', width)
-    .attr('height', height);
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     const g = svg.append('g')
-    .attr('transform', `translate(${width / 2},${height / 2})`)
-    .attr('class',styles.content);
-
+      .attr('transform', `translate(${width / 2},${height / 2})`)
+      .attr('class',styles.content);
 
     //lines svg (this reason why draw lines sng first: let lines under the slices)
-
     g.append("g")
-    .attr("class", styles.lines);
+      .attr("class", styles.lines);
+
+    //slices
     g.append("g")
-    .attr("class", styles.slices);
+      .attr("class", styles.slices);
 
+    //labels
     g.append("g")
-    .attr("class", "labels");
+      .attr("class", "labels");
 
 
-
+    //definition arc
     const arc = d3.arc()
       .innerRadius(radius * 0.4)
       .outerRadius(radius * 0.8);
-
-
     const outerArc = d3.arc()
       .innerRadius(radius * 0.9)
       .outerRadius(radius * 0.9);
 
+    console.log(styles.d3_tip);
+
+    const toolTip = tip()
+      .attr('class', styles.d3_tip)
+      .html(function(d) {
+        return d.data.name;
+      });
+
+    // toolTip.rootElement(document.getElementsByClassName(styles.slices)[0]);
+
+    toolTip.offset([-50,20]);
+
+    const vis = g.select(`.${styles.slices}`).call(toolTip);
 
 
 
-
-    const pieBlock = g.select(`.${styles.slices}`).selectAll('g')
+    /* render slices */
+    const pieBlock = vis.selectAll('g')
       .data(pieData)
       .enter()
       .append('g')
       .attr('id', (d, i) => `pie_${i}`)
-      .attr('class', styles.pieBlock)
-      .on('mouseenter',(d, i) => {
-        d3.select(`#polyline_${i}`).classed(styles.hover,true);
-      })
-      .on('mouseleave',(d, i) => {
-        d3.select(`#polyline_${i}`).classed(styles.hover,false);
-      });
+      .attr('class', styles.pieBlock);
+      // .on('mouseover',(d, i) => {
+      //
+      //   // d3.select(`#polyline_${i}`).classed(styles.hover,true);
+      //   // toolTip.show(d,_this);
+      // })
+      // .on('mouseout',(d, i) => {
+      //   console.log(this);
+      //   d3.select(`#polyline_${i}`).classed(styles.hover,false);
+      //   toolTip.hide(d,this);
+      // });
+
+    d3.selectAll(`.${styles.pieBlock}`).each(function (d, i) {
+      d3.select(this)
+        .on('mouseover', (d,i) => {
+          d3.select(`#polyline_${i}`).classed(styles.hover,true);
+          toolTip.show(d,this);
+        })
+        .on('mouseout',(d, i) => {
+          d3.select(`#polyline_${i}`).classed(styles.hover,false);
+          toolTip.hide(d,this);
+        });
+    });
 
 
     pieBlock.append('path')
@@ -126,79 +154,76 @@ export class Pie extends React.Component {
         endAngle: d.endAngle
       }));
 
-    pieBlock.append('text')
-      .attr('transform', d => `translate(${arc.centroid(d)})`)
-      .text(d => d.extra.percent);
 
 
-
+    /* render text */
     const text = svg.select(".labels").selectAll("text")
-    .data(pieData);
+      .data(pieData);
 
     text.enter()
-    .append("text")
-    .attr("dy", ".35em")
-    .text(function(d) {
-      return d.data.name;
-    })
-    .style('fill',(d,i) => colors[i])
-    .transition().duration(1000)
-    .attrTween("transform", function(d) {
-      this._current = this._current || d;
-      const interpolate = d3.interpolate(this._current, d);
-      this._current = interpolate(0);
-      return function(t) {
-        const d2 = interpolate(t);
-        const pos = outerArc.centroid(d2);
-        pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
-        return "translate("+ pos +")";
-      };
-    })
-    .styleTween("text-anchor", function(d){
-      this._current = this._current || d;
-      const interpolate = d3.interpolate(this._current, d);
-      this._current = interpolate(0);
-      return function(t) {
-        const d2 = interpolate(t);
-        return midAngle(d2) < Math.PI ? "start":"end";
-      };
-    });
+      .append("text")
+      .attr("dy", ".35em")
+      .text(function(d) {
+        return d.data.name;
+      })
+      .style('fill',(d,i) => colors[i])
+      .transition().duration(1000)
+      .attrTween("transform", function(d) {
+        this._current = this._current || d;
+        const interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          const d2 = interpolate(t);
+          const pos = outerArc.centroid(d2);
+          pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+          return "translate("+ pos +")";
+        };
+      })
+      .styleTween("text-anchor", function(d){
+        this._current = this._current || d;
+        const interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          const d2 = interpolate(t);
+          return midAngle(d2) < Math.PI ? "start":"end";
+        };
+      });
 
     text.exit()
-    .remove();
+      .remove();
 
-
+    /* render polyline */
     const polyline = d3.select(`.${styles.lines}`).selectAll('polyline')
-    .data(pieData)
-    .enter()
-    .append('polyline')
-    .style('fill','none')
-    .attr('class',styles.polyline)
-    .attr('id', (d, i) => `polyline_${i}`)
-    .style('stroke',(d,i) => colors[i]);
-
-
+      .data(pieData)
+      .enter()
+      .append('polyline')
+      .style('fill','none')
+      .attr('class',styles.polyline)
+      .attr('id', (d, i) => `polyline_${i}`)
+      .style('stroke',(d,i) => colors[i]);
 
     polyline.transition().duration(1000)
-    .attrTween("points", function(d){
-      this._current = this._current || d;
-      const interpolate = d3.interpolate(this._current, d);
-      this._current = interpolate(0);
-      return function(t) {
-        const d2 = interpolate(t);
-        const pos = outerArc.centroid(d2);
-        pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
-        return [arc.centroid(d2), outerArc.centroid(d2),pos];
-      };
-    });
+      .attrTween("points", function(d){
+        this._current = this._current || d;
+        const interpolate = d3.interpolate(this._current, d);
+        this._current = interpolate(0);
+        return function(t) {
+          const d2 = interpolate(t);
+          const pos = outerArc.centroid(d2);
+          pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+          return [arc.centroid(d2), outerArc.centroid(d2),pos];
+        };
+      });
 
     polyline.exit()
     .remove();
 
 
+
+
+    // console.log(toolTip);
+    // console.log(toolTip.show());
   }
-
-
 
   render() {
     const {width, height}  = this.props;

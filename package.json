@@ -24,6 +24,7 @@
   "homepage": "https://github.com/zuoq/react-d3-pie#readme",
   "dependencies": {
     "d3": "^5.5.0",
+    "d3-tip": "^0.9.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
