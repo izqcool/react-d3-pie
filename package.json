@@ -2,7 +2,7 @@
   "name": "react-d3-pie",
   "version": "1.0.0",
   "description": "react component to create a d3 pie chart",
-  "main": "index.js",
+  "main": "dist/build.js",
   "scripts": {
     "start": "webpack-dev-server --config webpack/dev.config.js --open --color --progress",
     "demo": "webpack --config webpack/dev.config.js --open --color --progress",
