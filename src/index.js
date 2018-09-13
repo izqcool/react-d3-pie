@@ -1,2 +1,2 @@
 import {Pie} from './components';
-export {Pie};
+export default Pie;

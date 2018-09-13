@@ -1,6 +1,6 @@
 {
   "name": "react-d3-pie",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "react component to create a d3 pie chart",
   "main": "dist/build.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "pie"
   ],
   "author": "izqcool",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/zuoq/react-d3-pie/issues"
   },

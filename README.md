@@ -48,7 +48,7 @@ import {Pie} from 'react-de-pie';
 |  width       |   The width of the pie chart rendering area (unit: px)  |  number     |   500         |
 |  width       |   The height of the pie chart rendering area (unit: px) |  number     |   400         |
 |  data        |    The data of the pie chart rendering area              |   array     |   [ {name: 'test1', value: 1}, {name: 'test2', value: 2}, {name: 'test3', value: 3}]    |
-|  colors      |   饼图渲染的颜色       |   array     |  d3.schemeCategory10  |
+|  colors      |   Pie chart rendering colors       |   array     |  d3.schemeCategory10  |
 |  innerRadius |   Relative multiple of the radius inside the pie chart (range 0~0.8)    |   number    |     0.4   ||
 |  outerRadius | Relative multiple of the outer radius of the pie chart (range 0~0.8)     |    number    |    0.8    |
 
