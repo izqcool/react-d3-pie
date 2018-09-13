@@ -2,21 +2,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import * as styles from './Pie.scss';
-import tip from 'd3-tip';
-
-// d3.tip = tip;
 
 export class Pie extends React.Component {
 
   static propTypes = {
+    data: PropTypes.array.isRequired,
     width: PropTypes.number.isRequired,
+    innerRadius: PropTypes.number.isRequired,
+    outerRadius: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     colors: PropTypes.array.isRequired
   };
 
   static defaultProps = {
+    data: [
+      {name: 'test1', value: 1},
+      {name: 'test2', value: 2},
+      {name: 'test3', value: 3}
+    ],
     width: 500,
     height: 400,
+    innerRadius: 0.4,
+    outerRadius: 0.8,
     colors: d3.schemeCategory10
   };
 
@@ -27,24 +34,8 @@ export class Pie extends React.Component {
   }
 
   componentDidMount() {
-    const testData = [
-      {value: 200, name: 'test1'},
-      {value: 50, name: 'test2'},
-      {value: 70, name: 'test3'},
-      {value: 40, name: 'test4'},
-    ];
-
-    this.renderPie(testData);
-
-    const testData1 = [
-      {value: 200, name: 'test1'},
-      {value: 50, name: 'test2'},
-      {value: 70, name: 'test3'}
-    ];
-
-    setTimeout(()=>{
-      this.renderPie(testData1);
-    },3000)
+    const {data} = this.props;
+    this.renderPie(data);
   }
 
 
@@ -55,7 +46,7 @@ export class Pie extends React.Component {
     }
 
     // clear canvas
-    const {width, height, colors} = this.props;
+    const {width, height, colors, innerRadius, outerRadius} = this.props;
     const radius = Math.min(width, height) / 2;
     let pieData = d3.pie().value(d => d.value)(data);
     const formatPercent = d3.format('.1%');
@@ -92,25 +83,26 @@ export class Pie extends React.Component {
 
     //definition arc
     const arc = d3.arc()
-      .innerRadius(radius * 0.4)
-      .outerRadius(radius * 0.8);
+      .innerRadius(radius * innerRadius)
+      .outerRadius(radius * outerRadius);
     const outerArc = d3.arc()
-      .innerRadius(radius * 0.9)
-      .outerRadius(radius * 0.9);
+      .innerRadius(radius * 0.85)
+      .outerRadius(radius * 0.85);
 
-    console.log(styles.d3_tip);
 
-    const toolTip = tip()
-      .attr('class', styles.d3_tip)
-      .html(function(d) {
-        return d.data.name;
-      });
+    // const toolTip = tip()
+    //   .attr('class', styles.d3_tip)
+    //   .html(function(d) {
+    //     return d.data.name;
+    //   });
 
     // toolTip.rootElement(document.getElementsByClassName(styles.slices)[0]);
 
-    toolTip.offset([-50,20]);
+    // toolTip.offset([-50,20]);
+    //
+    // const vis = g.select(`.${styles.slices}`).call(toolTip);
 
-    const vis = g.select(`.${styles.slices}`).call(toolTip);
+    const vis = g.select(`.${styles.slices}`);
 
 
 
@@ -120,29 +112,27 @@ export class Pie extends React.Component {
       .enter()
       .append('g')
       .attr('id', (d, i) => `pie_${i}`)
-      .attr('class', styles.pieBlock);
-      // .on('mouseover',(d, i) => {
-      //
-      //   // d3.select(`#polyline_${i}`).classed(styles.hover,true);
-      //   // toolTip.show(d,_this);
-      // })
-      // .on('mouseout',(d, i) => {
-      //   console.log(this);
-      //   d3.select(`#polyline_${i}`).classed(styles.hover,false);
-      //   toolTip.hide(d,this);
-      // });
+      .attr('class', styles.pieBlock)
+      .on('mouseover',(d, i) => {
+        d3.select(`#polyline_${i}`).classed(styles.hover,true);
+      })
+      .on('mouseout',(d, i) => {
+        d3.select(`#polyline_${i}`).classed(styles.hover,false);
+      });
 
-    d3.selectAll(`.${styles.pieBlock}`).each(function (d, i) {
-      d3.select(this)
-        .on('mouseover', (d,i) => {
-          d3.select(`#polyline_${i}`).classed(styles.hover,true);
-          toolTip.show(d,this);
-        })
-        .on('mouseout',(d, i) => {
-          d3.select(`#polyline_${i}`).classed(styles.hover,false);
-          toolTip.hide(d,this);
-        });
-    });
+
+    /* this is for add tooltip */
+    // d3.selectAll(`.${styles.pieBlock}`).each(function (d, i) {
+    //   d3.select(this)
+    //     .on('mouseover', (d,i) => {
+    //       d3.select(`#polyline_${i}`).classed(styles.hover,true);
+    //       toolTip.show(d,this);
+    //     })
+    //     .on('mouseout',(d, i) => {
+    //       d3.select(`#polyline_${i}`).classed(styles.hover,false);
+    //       toolTip.hide(d,this);
+    //     });
+    // });
 
 
     pieBlock.append('path')
@@ -218,11 +208,6 @@ export class Pie extends React.Component {
     polyline.exit()
     .remove();
 
-
-
-
-    // console.log(toolTip);
-    // console.log(toolTip.show());
   }
 
   render() {

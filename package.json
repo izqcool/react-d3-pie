@@ -4,8 +4,9 @@
   "description": "react component to create a d3 pie chart",
   "main": "index.js",
   "scripts": {
-    "demo": "webpack-dev-server --config webpack/dev.config.js --open --color --progress",
-    "build": "webpack --config webpack/webpack.config.js --open --color --progress"
+    "start": "webpack-dev-server --config webpack/dev.config.js --open --color --progress",
+    "demo": "webpack --config webpack/dev.config.js --open --color --progress",
+    "build": "webpack --config webpack/prod.config.js --open --color --progress"
   },
   "repository": {
     "type": "git",

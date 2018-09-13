@@ -3,23 +3,19 @@ const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const webpackCommon = require('./webpack.config');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const parentPath = path.resolve(__dirname, '..');
 const demoPath = `${parentPath}/demo`;
 
-
 module.exports = webpackMerge(webpackCommon,{
-
   entry: path.resolve(`${parentPath}/src/demo.js`),
 
   output: {
     path: path.resolve(`${parentPath}/demo`),
     filename: "build.js"
   },
-
   devtool:'inline-source-map',
-
   mode: 'development',
 
   plugins: [
@@ -40,7 +36,7 @@ module.exports = webpackMerge(webpackCommon,{
         minifyURLs: true,
       }
     }),
-    new CleanWebpackPlugin([`${demoPath}`]),
     new webpack.HotModuleReplacementPlugin()
   ]
+
 });
