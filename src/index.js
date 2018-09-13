@@ -1,2 +1,2 @@
 import {Pie} from './components';
-export {Pie};
+module.exports = {Pie};
