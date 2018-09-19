@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import {Tooltip} from '../../classes';
 import * as styles from './Pie.scss';
 
 export class Pie extends React.Component {
+
+  toolTip = null;
 
   static propTypes = {
     data: PropTypes.array.isRequired,
@@ -115,9 +118,28 @@ export class Pie extends React.Component {
       .attr('class', styles.pieBlock)
       .on('mouseover',(d, i) => {
         d3.select(`#polyline_${i}`).classed(styles.hover,true);
+        const {offsetX, offsetY} = d3.event;
+        // console.log(d3.mouse(svg));
+        console.log(d3.event);
+        const dom = d3.event.relatedTarget;
+        // console.log(this);
+        const tip = new Tooltip({
+          parentDom: svg,
+          data: d.data
+        });
+        this.toolTip = tip;
+        this.toolTip.show();
+        this.toolTip.setPos(offsetX,offsetY);
+      })
+      .on('mousemove',(d, i) => {
+        const {offsetX, offsetY} = d3.event;
+        console.log(d3.event);
+        this.toolTip.setPos(offsetX,offsetY);
       })
       .on('mouseout',(d, i) => {
         d3.select(`#polyline_${i}`).classed(styles.hover,false);
+        // this.toolTip.hide();
+        // this.toolTip = null;
       });
 
 
