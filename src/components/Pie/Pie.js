@@ -93,18 +93,6 @@ export class Pie extends React.Component {
       .outerRadius(radius * 0.85);
 
 
-    // const toolTip = tip()
-    //   .attr('class', styles.d3_tip)
-    //   .html(function(d) {
-    //     return d.data.name;
-    //   });
-
-    // toolTip.rootElement(document.getElementsByClassName(styles.slices)[0]);
-
-    // toolTip.offset([-50,20]);
-    //
-    // const vis = g.select(`.${styles.slices}`).call(toolTip);
-
     const vis = g.select(`.${styles.slices}`);
 
 
@@ -119,10 +107,6 @@ export class Pie extends React.Component {
       .on('mouseover',(d, i) => {
         d3.select(`#polyline_${i}`).classed(styles.hover,true);
         const {offsetX, offsetY} = d3.event;
-        // console.log(d3.mouse(svg));
-        console.log(d3.event);
-        const dom = d3.event.relatedTarget;
-        // console.log(this);
         const tip = new Tooltip({
           parentDom: svg,
           data: d.data
@@ -133,28 +117,13 @@ export class Pie extends React.Component {
       })
       .on('mousemove',(d, i) => {
         const {offsetX, offsetY} = d3.event;
-        console.log(d3.event);
         this.toolTip.setPos(offsetX,offsetY);
       })
       .on('mouseout',(d, i) => {
         d3.select(`#polyline_${i}`).classed(styles.hover,false);
-        // this.toolTip.hide();
-        // this.toolTip = null;
+        this.toolTip.hide();
+        this.toolTip = null;
       });
-
-
-    /* this is for add tooltip */
-    // d3.selectAll(`.${styles.pieBlock}`).each(function (d, i) {
-    //   d3.select(this)
-    //     .on('mouseover', (d,i) => {
-    //       d3.select(`#polyline_${i}`).classed(styles.hover,true);
-    //       toolTip.show(d,this);
-    //     })
-    //     .on('mouseout',(d, i) => {
-    //       d3.select(`#polyline_${i}`).classed(styles.hover,false);
-    //       toolTip.hide(d,this);
-    //     });
-    // });
 
 
     pieBlock.append('path')

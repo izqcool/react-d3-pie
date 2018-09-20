@@ -8,10 +8,21 @@ export class Tooltip {
   constructor(option) {
     Object.assign(this, option);
     this.padding = 30;
-    this.offset= [30,30];
+    this.offset= [20,20];
     this.rectWidth = 0;
     this.rectHeight = 0;
+    this.parentWidth = 0;
+    this.parentHeight = 0;
+    this.init();
   }
+
+  init() {
+    const {parentDom} = this;
+    const {width, height} = parentDom.node().getBoundingClientRect();
+    this.parentWidth = width;
+    this.parentHeight = height;
+  }
+
 
   show() {
     const {parentDom, data, padding} = this;
@@ -21,8 +32,9 @@ export class Tooltip {
     // .text(()=>{
     //   return `${data.name}:${data.value}`;
     // });
-
-    console.log(parentDom.node().getBBox());
+    // console.log(parentDom.node());
+    //
+    // console.log(parentDom.node().getBBox());
     // console.log(parentDom.node());
 
     const rect = tipWrapper.append('rect')
@@ -54,30 +66,20 @@ export class Tooltip {
   }
 
   setPos(x,y) {
-    const {parentDom, offset, rectWidth, rectHeight} = this;
+    const {offset, rectWidth, rectHeight, parentHeight} = this;
     const [offsetX, offsetY] = offset;
-    // console.log(offsetX);
-    const {width, height} = parentDom.node().getBBox();
-    // const textSvgRect = d3.select(`.${styles.text}`).node().getBBox();
-    // const textWidth = textSvgRect.width;
-    // const textheight = textSvgRect.height;
+    let transX =  x + offsetX;
+    let transY =  y + offsetY;
+    if(transX + rectWidth >= parentHeight) {
+      transX = x - offsetX - rectWidth;
+    }
 
-    // console.log(x);
+    if(transY + rectHeight >= parentHeight) {
+      transY = y - offsetY - rectHeight;
+    }
 
-    let transX =  x + offsetX + rectWidth;
-    // if(transX >= 480) {
-    //   transX = x - offsetX - rectWidth;
-    // }
-
-    console.log(width);
-    console.log(transX);
-
-    // console.log(x);
-    // console.log(y);
-    // console.log(width);
-    // console.log(height);
     d3.select(`.${styles.show}`)
-    .attr('transform', `translate(${transX},${y+offsetY})`);
+    .attr('transform', `translate(${transX},${transY})`);
 
   }
 
