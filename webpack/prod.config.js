@@ -17,7 +17,7 @@ module.exports = webpackMerge(webpackCommon,{
     library: libraryName,
     libraryTarget: 'umd'
   },
-  devtool:'source-map',
+  devtool: false,
 
   mode: 'production',
 

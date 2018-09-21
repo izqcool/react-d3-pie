@@ -2,6 +2,8 @@ const path = require('path');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const webpackCommon = require('./webpack.config');
+const DefinePlugin = require('webpack/lib/DefinePlugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const parentPath = path.resolve(__dirname, '..');
 
@@ -12,10 +14,13 @@ module.exports = webpackMerge(webpackCommon,{
     path: path.resolve(`${parentPath}/demo`),
     filename: "build.js"
   },
-  devtool:'inline-source-map',
+  devtool:'source-map',
   mode: 'development',
 
   plugins: [
+    new DefinePlugin({
+
+    }),
     new HtmlWebpackPlugin({
       title: 'react-d3-pie',
       inject: true,
@@ -34,6 +39,16 @@ module.exports = webpackMerge(webpackCommon,{
       }
     }),
     new webpack.HotModuleReplacementPlugin()
-  ]
+  ],
+
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          compress: true
+        }
+      })
+    ]
+  }
 
 });
