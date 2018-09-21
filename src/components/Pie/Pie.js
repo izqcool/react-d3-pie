@@ -96,7 +96,6 @@ export class Pie extends React.Component {
     const vis = g.select(`.${styles.slices}`);
 
 
-
     /* render slices */
     const pieBlock = vis.selectAll('g')
       .data(pieData)
@@ -109,7 +108,8 @@ export class Pie extends React.Component {
         const {offsetX, offsetY} = d3.event;
         const tip = new Tooltip({
           parentDom: svg,
-          data: d.data
+          data: d.data,
+          extra: d.extra
         });
         this.toolTip = tip;
         this.toolTip.show();
