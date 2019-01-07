@@ -21,6 +21,15 @@ module.exports = webpackMerge(webpackCommon,{
 
   mode: 'production',
 
+  externals: [
+    {
+      react: 'react',
+      d3: 'd3',
+      'prop-types': 'prop-types',
+      'react-dom': 'react-dom'
+    }
+  ],
+
   plugins: [
     new DefinePlugin({
 

@@ -1,6 +1,6 @@
 {
   "name": "react-d3-pie",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "react component to create a d3 pie chart",
   "main": "dist/build.js",
   "scripts": {
